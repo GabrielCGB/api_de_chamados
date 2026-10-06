@@ -79,18 +79,6 @@ const verificarAutenticacao = (req, res, next) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     
     
     app.get('/chamados', async (req, res) => {
@@ -128,27 +116,7 @@ const verificarAutenticacao = (req, res, next) => {
     
     
     
-    
-    
-    app.get('/chamados/:id', verificarAutenticacao, async (req, res) => {
-        const id = Number(req.params.id);
-        
-        
-        try{
-            const resultado = await pool.query(`SELECT * FROM chamados WHERE id = $1`, [id])
-            if (resultado.rows.length === 0) {
-                return res.status(404).json({
-                    erro: "Chamado não encontrado"
-                })
-            }
-            
-            return res.status(201).json(resultado.rows[0])
-        }
-        catch(erro){
-            next(erro)
-        }
-    });
-    
+
     app.get('/chamados/estatisticas', async (req, res) => {
         try {
             const resultado = await pool.query(`
@@ -167,6 +135,27 @@ const verificarAutenticacao = (req, res, next) => {
         }
     });
     
+    app.get('/chamados/:id', verificarAutenticacao, async (req, res, next) => {
+        const id = Number(req.params.id);
+        
+        
+        try{
+            const resultado = await pool.query(`SELECT * FROM chamados WHERE id = $1`, [id])
+            if (resultado.rows.length === 0) {
+                return res.status(404).json({
+                    erro: "Chamado não encontrado"
+                })
+            }
+            
+            return res.status(201).json(resultado.rows[0])
+        }
+        catch(erro){
+            next(erro)
+        }
+    });
+
+
+
     app.post('/chamados', validarChamado, validarPrioridade, async (req, res) => {
         const { titulo, descricao, setor, prioridade } = req.body
         try{
